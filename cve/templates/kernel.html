@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% block title %}LineageOS Kernel Tracker for {{ kernel.vendor }}/{{ kernel.device }}{% endblock %}
+{% block head %}
+    <script src="{{ url_for('static', filename='js/Progress.js') }}"></script>
+{% endblock %}
+{% block content %}
+    <div id="status_ids">
+        {%- for s in status_ids %}
+            <div id={{ "status_" ~ s.short_id }}>{{ s.text }}</div>
+        {%- endfor -%}
+    </div>
+
+    <div id="deprecate-kernel-dialog" class="dialog" kernel_id="{{ kernel.id }}" deprecated="{{ kernel.deprecated }}">
+        <div class="title">
+            Mark as
+            {%- if kernel.deprecated %}
+                not deprecated
+            {%- else %}
+                deprecated
+            {%- endif %}
+        </div>
+        <div class="content">
+            This kernel will {% if not kernel.deprecated %}<b>not</b> {% endif %}be shown on the main page.
+        </div>
+        <div class="error"></div>
+        <div class="actions">
+            <button class="cancel">CANCEL</button>
+            <button class="mark">MARK</button>
+        </div>
+    </div>
+
+    <div id="import-statuses-dialog" class="dialog" to_kernel="{{ kernel.repo_name }}">
+        <div class="title">Import statuses</div>
+        <div class="content">
+            <label>Import from</label>
+            <input type="text" class="from_kernel" list="kernel_list" placeholder="Please select or start typing...">
+            <datalist id="kernel_list">
+                {%- for k in allKernels %}
+                {%- if k != kernel.repo_name %}
+                    <option>{{ k }}</option>
+                {%- endif %}
+                {%- endfor %}
+            </datalist>
+            <label>Override all statuses</label>
+            <div>
+                <input type="checkbox" class="override_all" id="override_all">
+                <label for="override_all">Checking this will override all statuses, not just 'unpatched'</label>
+            </div>
+        </div>
+        <div class="error"></div>
+        <div class="actions">
+            <button class="cancel">CANCEL</button>
+            <button class="import">IMPORT</button>
+        </div>
+    </div>
+
+    <div id="edit-kernel-dialog" class="dialog" kernel_id="{{ kernel.id }}">
+    <div class="title">Edit kernel</div>
+    <div class="content">
+        <label>Kernel version</label>
+        <input type="text" class="version" placeholder="Major.Minor (e.g. 3.10 or 4.4)" value="{{ kernel.version }}" />
+        <label>Tags</label>
+        <div id="kernelTags" class="selectable left">
+            {%- for tag in all_tags %}
+                {%- if kernel.tags and tag in kernel.tags %}
+                {%- set class = "active" %}
+                {%- else %}
+                {%- set class = "" %}
+                {%- endif %}
+                {%- if tag != 'none' %}
+                <span class="{{ class }}">{{ tag }}</span>
+                {%- endif %}
+            {%- endfor %}
+        </div>
+        <label>Specify own, if not in the list above:</label>
+        <input type="text" class="tags" placeholder="qcom, broadcom, exynos, ... (comma separated)" value="" />
+    </div>
+    <div class="error"></div>
+    <div class="actions">
+        <button class="cancel">CANCEL</button>
+        <button class="save">SAVE</button>
+    </div>
+    </div>
+
+    <div id="cve-info-dialog" class="dialog">
+        <div class="title">
+            <div class="name">CVE-20YY-XXX</div>
+            <i class="copy mdi mdi-content-copy"></i>
+            <div id="cvss_score" title="cvss score" placeholder="Score">-1</div>
+            {%- if authorized %}
+            <div class="edit">
+                <i class="mdi mdi-18px mdi-pencil" title="Edit CVE"></i>
+            </div>
+            {%- endif %}
+        </div>
+        <div class="content">
+            {%- if authorized %}
+            <div class="tags">
+                <label>Tags</label>
+                <div id="cveTags" class="selectable left"></div>
+                <div class="field" placeholder="Specify own, if not in the list above (comma separated)"></div>
+            </div>
+            {%- endif %}
+            <div class="versions">
+                <label>Affected versions</label>
+                <div class="field" placeholder="Comma separated list of affected kernel versions">3.10, 3.18, 4.4</div>
+            </div>
+            <div class="fixed">
+                <label>Fixed versions</label>
+                <div class="field" placeholder="Comma separated list of fixed kernel versions and/or caf tags">3.10.107, 3.18.x, 4.4.9</div>
+            </div>
+            <div class="notes">
+                <label>Notes</label>
+                <div class="field" placeholder="Applicable versions, affected platforms, ..."></div>
+            </div>
+            <label>Links</label>
+            <div class="links"></div>
+        </div>
+        <div class="error"></div>
+        <div class="actions">
+            <button class="cancel">CANCEL</button>
+            <a class="compare" target="_blank"><button>COMPARE KERNELS</button></a>
+            {% if authorized %}
+                <a class="logs"><button>LOGS</button></a>
+                <a class="edit"><button>EDIT</button></a>
+                <button class="save">SAVE</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card container">
+        <div class="header">
+            {% set org = config['GITHUB_ORG'] %}
+            <span class="title">
+                {{ kernel.vendor }}/{{ kernel.device }}
+                <a href="https://github.com/{{ org }}/{{ kernel.repo_name }}" target="_blank" title="View on GitHub"><i class="mdi mdi-github-circle"></i></a>
+            </span>
+            {% if show_last_update -%}
+                <span class="subtitle">
+                    updated on {{ kernel.last_github_update.strftime('%b %d, %Y') }}
+                </span>
+            {%- endif %}
+            {% if devices %}
+                <div class="subtitle">
+                    <span>used by </span>
+                    {% for d in devices -%}
+                        <a class="device" href="https://github.com/{{ org }}/{{ d.repo }}" target="_blank" title="View on GitHub">
+                            {{ d.name }}{% if not loop.last %},{% endif %}
+                        </a>
+                    {%- endfor %}
+                </div>
+            {% endif %}
+            <div id="progress">
+                <div id="progress-bar" value="{{ kernel.progress }}">
+                    <div id="progress-bar-inner"></div>
+                </div>
+                <div id="progress-value"></div>
+            </div>
+        </div>
+
+        {% if authorized %}
+        <div class="filter container">
+            <div id="open-close-filters">Filters <i class="mdi mdi-chevron-down"></i></div>
+            {%- if selected_tags | length == 0 and filter_version == None %}
+            {%- set class = "" %}
+            {%- else %}
+            {%- set class = "active" %}
+            {%- endif %}
+            <div id="filter-box" class="{{ class }}">
+                {%- if kernel.version and kernel.version != '' %}
+                <h3>Affected kernel version</h3>
+                <div class="action apply-area">
+                    {%- if filter_version == 'True' %}
+                        {%- set same = "active" %}
+                    {%- elif filter_version == 'False' %}
+                        {%- set different = "active" %}
+                    {%- else %}
+                        {%- set all = "active" %}
+                    {%- endif %}
+                    <button id="apply-same-version" class="{{ same }}">THIS KERNEL'S VERSION</button>
+                    <button id="apply-different-versions" class="{{ different }}">DIFFERENT VERSION</button>
+                    <button id="apply-all-versions" class="{{ all }}">ALL VERSIONS</button>
+                </div>
+                {%- endif %}
+                <h3>Tags</h3>
+                <div class="selectable">
+                {%- for tag in all_tags %}
+                    {%- if tag in selected_tags %}
+                    {%- set class = "active" %}
+                    {%- else %}
+                    {%- set class = "" %}
+                    {%- endif %}
+                    {%- if kernel.tags and tag in kernel.tags %}
+                    {%- set class = class + " kernel-filter" %}
+                    {%- endif %}
+                    <span class="{{ class }}">{{ tag }}</span>
+                {%- endfor %}
+                </div>
+                <div class="action apply-area">
+                    <button id="apply-kernel-filter">APPLY KERNEL TAGS</button>
+                    <button id="apply-filter">APPLY SELECTED TAGS</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="cves container">
+            {%- for column in cves | slice(3) %}
+            {%- set cveloop = loop %}
+                <div class="four columns">
+                    {%- for c in column %}
+                        <div class="cve" id="{{ c.cve_name }}">
+                            {%- if authorized %}
+                                {%- if c.cvss_score >= 9 %}
+                                    {%- set severity = "critical" %}
+                                {%- elif c.cvss_score >= 7 %}
+                                    {%- set severity = "high" %}
+                                {%- elif c.cvss_score >= 4 %}
+                                    {%- set severity = "medium" %}
+                                {%- else %}
+                                    {%- set severity = "low" %}
+                                {%- endif %}
+                                {%- set pointer = "pointer" %}
+                                <i class="severity {{ severity }} mdi mdi-fire" title="{{ severity }} severity"></i>
+                            {%- endif %}
+                            <span class="name" cve_id="{{ c.id }}" cve_name="{{ c.cve_name }}">{{ c.cve_name }}</span>
+                            <span class="status {{ pointer }} status-menu" kernel_id="{{ kernel.id }}" cve_id="{{ c.id }}" status_id="{{ patch_status[c.id] }}"></span>
+                        </div>
+                    {%- endfor %}
+                </div>
+            {% endfor -%}
+        </div>
+        {% if authorized %}
+            <div class="actions container" id="kernelActions">
+                <button id="open-deprecate-kernel-dialog">
+                    {% if kernel.deprecated %}
+                        MARK AS NOT DEPRECATED
+                    {% else %}
+                        MARK AS DEPRECATED
+                    {% endif %}
+                </button>
+                <button id="open-import-stauses-dialog">IMPORT STATUSES</button>
+                <button id="open-edit-kernel-dialog">EDIT KERNEL</button>
+                <a href="/logs/kernel/{{ kernel.repo_name }}"><button id="open-logging">SHOW LOGS</button></a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/cve.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/kernel.js') }}"></script>
+    {% if authorized %}
+        <script src="{{ url_for('static', filename='js/updates.js') }}"></script>
+    {% endif %}
+{% endblock %}

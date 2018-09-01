@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}LineageOS CVE Tracker{% endblock %}
+{% block content %}
+    <div class="card container">
+        <div class="header">
+            <span class="title">Welcome</span>
+        </div>
+        <div class="text container">
+            <p class="title">What is this?</p>
+            <p>The CVE tracker is a manual way for maintainers to keep track of the patch status of CVEs for the kernels used in official devices.</p>
+            <p class="title">What's a CVE?</p>
+            <p>Common Vulnerabilities and Exposures. These are security holes which <i>could</i> be used by an attacker to get access to your data. Due to other security measures in the Android OS like SELinux, most of these vulnerabilities can't be exploited and are just theoretical.</p>
+            <p class="title">The kernel for my device is only at x%, why is it so insecure?</p>
+            <p>Please note that the tracker needs to be manually updated by each device maintainer and it does not necessarily represent the real patch status of the kernel.</p>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}
