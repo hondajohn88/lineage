@@ -1,0 +1,4 @@
+DEBUG: True # make this False in production
+SLACK_TOKEN: "xoxb-11111111111-222222222222222"
+ACTIVE_PLUGINS:
+  - plugins.jira.JiraTicketParser

@@ -1,0 +1,5 @@
+rtmbot
+mongoengine
+pygerrit2
+requests
+beautifulsoup4
