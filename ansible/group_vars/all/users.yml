@@ -1,0 +1,22 @@
+---
+users:
+  - username: zifnab
+    groups: ['sudo']
+    shell: /usr/bin/zsh
+    ssh_key:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoRnyuFWRqvGprQYgQF6C35mGN8JHLyi9MqG3dfj0LoiuAtLbcYVB7qiMMzBhsb87TIOIYefOae8zmnT8HwBtfM+R8xfE+j3MC7DqBTunW8/1ftiUp7OKgBk1wUU0TJ8AcVXXU7a4AlowhgmgCT4+ksGuhE2w2Ex0p7kRGwj9UXLohR424qF2rj5q14nSNogqou+hr58HGBmTpMULb8F9g480mkhURPrRxWU+c89mez4FuHh9aL+nSGwjI70U8gZBiyDcrHp91UeLWezBjRkw+mUZOMZKacUci/zO9Sr/jOS7zU4WJzT2TBfFTMzAvlJ9Mk2uOahh1i8TsJQL/XeRh zifnab@phenom.zifnab.net"
+  - username: invisiblek
+    groups: ['sudo']
+    shell: /bin/bash
+    ssh_key:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCxMBnD7OTItJwgViuRuz+QsQ27kV+ZB4qW/p8GJtmy5dzzYZkLq8MBN+AyOD4shHvG3iauCt8SmdAxCi+JV9T9TcPPHLB4vD+/Ecb7ENQV2wXLJRWqZkd10wGyXsCRTE42nghCW3JmiYoWqBWIiCWIdyfXQa1cBRCJPbbIAj1Hm2A31N34I1SU+Oi4cLvbSHcgzG6RoEwH+ccmvZQ9/vB2ykmBEfZgooU196tJWaq7PfrKCAG6OvZkIBY7yk/lwJffb0FYqhchmXKNNVovUicyfYFKdOophhoA4co4rumbHWRwLlDGAL3+UzoN8y++hR8UDJMe5LKzHq22aNG0C9RL dan.pasanen@gmail.com"
+  - username: stucki
+    groups: ['sudo']
+    shell: /bin/bash
+    ssh_key:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDT2i383WFEO4thtySx/mSgT9uHpKUa5VzKkkIrPAIS4pBdrf0B7IlJzXnIv25AR9zucDyqWLNrZ/D/dttB4Yl7tFnZs+xYUDXDjKwEiMwYTYNo1d02Lb2HsjQRHBiGdWUSOU0bAZ4lEaYNBuclmCJPBSLdP+B6KSsz2HN3n4kUetcM9g8kN73utsYfMcq3Qa7+TssdZiC5iYgFcgVvNabNIWgjNpJpQTHyPSwgAZO7p29T1T6bn5f0rnOSVwFq/W12dhP+Ax/zXQAVnaSE5XK/aC+rjLACvr0oRntpdPD2H/cnuyzGKV40HsXWVcH6OM+SRYIBcE4iAMe9Q6iGhkLp michael@stucki.io"
+  - username: ansible
+    groups: ['sudo']
+    shell: /bin/bash
+    ssh_key:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDcijx2mUB/Tj7WiCda6WF9N+94f2sDdyrKLPLiJ3XYMWP1dCtpJeCTs71ObPKDSoSqgtpKGiKge8V1xc0L2IWmsrmb425Skcfqmvt9r8JSIB79Q/Zj8viI7U7SFAusN6tfl86k1Y6uZe/kwPC6Z7/06DRVXoCldINE/q9iXazc/4j0XCs0WEjFUT3eK5bz+PmRGkcCTC9pOyU6+Fi4dJe+l6R8CQGwKF9OYn9inzZ/L7Ut+U1pgvywDKOfZA0n5d2HokvEzH8y4SPuntC2syzloY11tlA1zGcLYYseiGU9FhMqdCSuVRWoTbwMCX6md665FgEv/QsHuzfjfgwTTv4F ansible@lineageos"

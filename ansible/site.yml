@@ -1,0 +1,83 @@
+---
+- name: base
+  hosts: all
+  become: yes
+  roles:
+    - base
+###
+# Jenkins Master
+##
+- name: jenkins
+  hosts: jenkins
+  become: yes
+  roles:
+    - nginx
+    - jenkins
+###
+# download.lineageos.org
+###
+- name: download
+  hosts: download
+  become: yes
+  roles:
+    - nginx
+    - download
+###
+# stats.lineageos.org
+###
+- name: stats
+  hosts: stats
+  become: yes
+  roles:
+    - nginx
+    - stats
+###
+# www.lineageos.org
+###
+- name: www
+  hosts: www
+  become: yes
+  roles:
+    - nginx
+    - jenkins_ssh_slave
+    - www
+###
+# cve.lineageos.org
+###
+- name: cve_tracker
+  hosts: cve_tracker
+  become: yes
+  roles:
+    - nginx
+    - cve_tracker
+###
+# cucumber.lineageos.org
+###
+- name: mirror
+  hosts: cucumber
+  become: yes
+  roles:
+    - mirror
+    - mirrorbits
+    - nginx
+- name: gerrit
+  hosts: cucumber
+  become: yes
+  roles:
+    - gerrit
+    - nginx
+- name: jira
+  hosts: cucumber
+  become: yes
+  tags: jira
+  roles:
+    - jira
+    - nginx
+###
+# android build slaves
+###
+- name: build_android
+  hosts: acc.umu.se
+  roles:
+    - build_android
+  become: yes
