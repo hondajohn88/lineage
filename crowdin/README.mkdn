@@ -1,0 +1,61 @@
+crowdin_sync.py
+==================
+
+Introduction
+------------
+This script is used to synchronize LineageOS' translations with Crowdin's. Also, it can handle
+automatic commiting to Gerrit and pushing/downloading to/from Crowdin.
+
+Prerequisites
+-------------
+The Ruby variant of crowdin-cli >= 0.5.2 is required for this to work.
+
+    \curl -sSL https://get.rvm.io | bash -s stable --ruby
+    source /home/your_username/.rvm/scripts/rvm # Add this to your .bashrc file!
+    rvm all do gem install crowdin-cli
+
+python-git is used for Git integration.
+
+    sudo apt-get install python-git
+
+Copy <cm_version>_extra_packages.xml to .repo/local_manifests of each <cm_version> tree
+to make sure you sync all the extra packages not included in the main manifest.
+
+Executing
+---------
+Export the following environment variables to set the API keys and the base path.
+Base path should contain all LineageOS trees in subfolders, named after LineageOS branches.
+Syncing stable trees requires an additional environment variable plus a 'stable'
+subfolder under the base path, due to crowdin API limitations:
+
+    export CM_CROWDIN_API_KEY=your_api_key
+    export CM_AOSP_CROWDIN_API_KEY=your_aosp_api_key
+    export CM_CROWDIN_BASE_PATH=your_base_path
+    export CM_CROWDIN_STABLE_BASE_PATH=your_stable_base_path
+
+Example:
+
+    export CM_CROWDIN_API_KEY=1234567890
+    export CM_AOSP_CROWDIN_API_KEY=0987654321
+    export CM_CROWDIN_BASE_PATH=/mnt/android/lineageos
+    export CM_CROWDIN_STABLE_BASE_PATH=/mnt/android/lineageos/stable
+
+Execute:
+
+    ./crowdin_sync.py --username your_gerrit_username --branch cm_version --ticket jira_id [--upload-sources] [--upload-translations] [--download]
+
+Bugs
+----
+ - When committing fails, the reason of it cannot be determined. Often this is just when there
+   are no new translations, so the script will not exit when this happens.
+
+Submitting changes
+------------------
+This repository is preconfigured to use the git-review plugin. More information can be found at:
+https://pypi.python.org/pypi/git-review
+
+You can upload your change to gerrit with commands like these:
+
+    git add *
+    git commit
+    git review
